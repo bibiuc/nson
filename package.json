@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "lib/index.js",
   "license": "MIT",
+  "author": "bibiuc <bbuc@qq.com>",
   "scripts": {
     "build": "coffee --compile --output lib/ src/"
   },
