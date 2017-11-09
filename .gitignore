@@ -4,3 +4,4 @@ node_modules
 *.map
 lib
 yarn*
+.DS_Store

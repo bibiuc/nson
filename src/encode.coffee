@@ -13,12 +13,12 @@ encodeFunction = (emitter, data) ->
   return_id = shortid.generate()
   emitter.on func_id, () ->
     result = data(arguments...)
-    emitter.emit(return_id, result);
+    emitter.emit emitter.id, return_id, result
   [func_id, return_id]
 
 #解析对象
 encodeObject = (emitter, data) ->
-  _encode = encode emitter;
+  _encode = encode emitter
   sequence = []
   sequence.push(['object', JSON.stringify(data)])
   isArray = _.isArray data
@@ -26,7 +26,10 @@ encodeObject = (emitter, data) ->
     if _.isObject(val) and !_.isFunction(val)
       [first, other...] =  _encode(val)
       sequence.push([key, other])
-    else if (isArray and !/^\d+$/.test(key)) or (_.isFunction(val) and !_.isNative(val))
+    else if isArray and !/^\d+$/.test(key)
+      ret = _encode(val)
+      sequence.push([key, ret...])
+    else if _.isFunction(val) and !_.isNative(val)
       ret = _encode(val)
       sequence.push([key, ret...])
   if _.isPlainObject(data) or _.isArray(data)
@@ -40,7 +43,7 @@ module.exports = encode =  R.curry (emitter, data) ->
     when _.isFunction(data)
       if !_.isNative(data)
         ret = encodeFunction(emitter, data)
-        ['function', ret...]
+        ['function', emitter.id, ret...]
       else
         ['other', JSON.stringify(data)]
     when _.isNumber(data) or _.isString(data) or _.isBoolean(data)

@@ -5,7 +5,11 @@ Lazy = require 'lazy.js'
 push = (events, name, func, times = 0) ->
   return if typeof func != 'function'
   events[name] = events[name] || []
-  events[name].push({handle: func, times: times}) if ! R.find(R.propEq('handle', func), events[name])
+  if ! R.find(R.propEq('handle', func), events[name])
+    events[name].push({
+      handle: func,
+      times: times
+    })
 
 pull = (events, name, funcs...) ->
   has = events[name] && events[name].length
@@ -26,7 +30,8 @@ run = (events, name, args...)->
     .toArray()
 
 module.exports = class
-  constructor: () ->
+  constructor: (id) ->
+    @id = id
     events = new Object
     @on = R.curryN(3, push)(events)
     @emit = R.curryN(2, run)(events)

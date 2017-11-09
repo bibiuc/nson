@@ -10,13 +10,13 @@ module.exports = decode = R.curryN 2,(emitter, data, parent) ->
     if data[0] == 'function'
       (args...) ->
         promise = new Bluebird (resolve, reject) ->
-          emitter.on data[2], (ret) ->
+          emitter.on data[3], (ret) ->
             if _.isError(ret)
               reject(ret)
             else
               resolve(ret)
           undefined
-        emitter.emit data[1], args...
+        emitter.emit data[1], data[2], args...
         promise
     else if _.isString data[1]
       JSON.parse data[1]
@@ -31,7 +31,7 @@ module.exports = decode = R.curryN 2,(emitter, data, parent) ->
         parent[key] = decode emitter, other
     parent
   else
-    [first, other...] = data;
+    [first, other...] = data
     parent = JSON.parse first[1]
     decode emitter, other, parent
     parent
